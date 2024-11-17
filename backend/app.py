@@ -8,7 +8,14 @@ from get_insights import process_data
 from models import analyze_csv
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Allow requests from React app) 
+# Update CORS configuration to allow all origins in development
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -36,10 +43,12 @@ def upload_file():
     else:
         return jsonify({'error': 'File type not allowed'}), 400
 
-@app.route('/predict', methods=['POST', 'GET'])
+@app.route('/predict', methods=['POST', 'GET', 'OPTIONS'])
 def predict():
+    # Add OPTIONS method handling for CORS preflight requests
+    if request.method == 'OPTIONS':
+        return '', 204
     if 'file' not in request.files:
-        print('No file part')
         return jsonify({'error': 'No file part'}), 400
     file = request.files['file']
     if file.filename == '':
@@ -67,7 +76,6 @@ def predict():
             data_dict = dict(zip(data['month'], data[metric]))
             predictions[metric] = analyze_csv(data_dict)
         
-        print(predictions)
         return jsonify(predictions)
     else:
         return jsonify({'error': 'File type not allowed'}), 400
