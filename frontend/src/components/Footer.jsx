@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left Section */}
         <div>
-          <h1 className="text-black text-2xl font-bold">PropertyAI</h1>
+          <h1 className="text-black text-2xl font-bold flex md:justify-start justify-center">PropertyAI</h1>
           <p className="mt-2 text-sm">
             Innovating commercial real estate with sustainable solutions. Your partner in eco-friendly office spaces.
           </p>
@@ -17,15 +17,15 @@ const Footer = () => {
         {/* Right Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Contact Details */}
-          <div>
-            <h3 className="text-lg font-semibold text-black mb-2">Contact Details</h3>
+          <div className="flex flex-col sm:items-start items-center">
+            <h3 className="text-lg font-bold text-black mb-2">Contact Details</h3>
             <p className="text-sm">Email: contact@propertyai.com</p>
             <p className="text-sm">Phone: +1 (555) 123-4567</p>
           </div>
 
           {/* Location & Social Links */}
-          <div>
-            <h3 className="text-lg font-semibold text-black mb-2">Location</h3>
+          <div className="flex flex-col sm:items-start items-center">
+            <h3 className="text-lg font-bold text-black mb-2">Location</h3>
             <p className="text-sm">Dallas, Texas</p>
 
             <div className="mt-4 flex gap-4">
