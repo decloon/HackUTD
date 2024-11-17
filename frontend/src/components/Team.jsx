@@ -1,7 +1,7 @@
 import Zabir from '../assets/zabir.jpg';
 import Vasu2 from '../assets/flower.jpg';
 import { ReactTyped } from 'react-typed';
-import FadeInWrapper from '../animations/FadeInWrapper';
+import FadeInWrapper from './FadeInWrapper';
 
 export const Team = () => {
   return (
