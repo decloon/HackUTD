@@ -20,7 +20,7 @@ ChartJS.register(
   Legend,
 );
 export const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("Water");
+  const [activeTab, setActiveTab] = useState("Water Usage");
   const [chartData, setChartData] = useState(null);
   const months = [
     "Jan",
@@ -36,36 +36,60 @@ export const Dashboard = () => {
     "Nov",
     "Dec",
   ];
+
   const generateRandomData = () => {
     return months.map(() => Math.floor(Math.random() * 1000) + 100);
   };
-  const generateAverageData = () => {
-    return months.map(() => Math.floor(Math.random() * 800) + 200);
+
+  const generatePredictedData = () => {
+    return months.map(() => Math.floor(Math.random() * 1000) + 200);
   };
+
+  const generatePredictedDataAfterAdvice = () => {
+    return months.map(() => Math.floor(Math.random() * 700) + 200);
+  };
+  
   useEffect(() => {
     const data = {
       labels: months,
       datasets: [
         {
-          label: `Your ${activeTab} Usage`,
-          data: generateRandomData(),
-          borderColor: "rgb(239, 68, 68)",
-          backgroundColor: "rgba(239, 68, 68, 0.2)",
-          tension: 0.4,
-          fill: true,
+            label: `Your ${activeTab}`,
+            data: generateRandomData(),
+            borderColor: "rgb(239, 68, 68)",
+            backgroundColor: "rgba(239, 68, 68, 0.2)",
+            tension: 0.4,
+            fill: true,
         },
         {
-          label: `Average ${activeTab} Usage`,
-          data: generateAverageData(),
-          borderColor: "rgb(34, 197, 94)",
-          backgroundColor: "rgba(34, 197, 94, 0.2)",
-          tension: 0.4,
-          fill: true,
+            label: `Your predicted ${activeTab} over the next year`,
+            data: generatePredictedData(),
+            borderColor: "rgb(34, 197, 94)",
+            backgroundColor: "rgba(34, 197, 94, 0.2)",
+            tension: 0.4,
+            fill: true,
         },
+        {
+            label: `Your predicted ${activeTab} if you follow through with our advice`,
+            data: generatePredictedDataAfterAdvice(),
+            borderColor: "rgb(34, 197, 94)",
+            backgroundColor: "rgba(34, 197, 94, 0.2)",
+            tension: 0.4,
+            fill: true,
+          },
       ],
     };
     setChartData(data);
   }, [activeTab]);
+
+  const getUnit = (tab) => {
+    if (tab.includes("Bill") || tab.includes("Expense")) return "(USD)";
+    if (tab.includes("Usage")) return tab.includes("Electricity") ? "(kWh)" : "(gallons)";
+    if (tab.includes("Waste")) return "(tons)";
+    if (tab.includes("Emissions")) return "(TCO2e)";
+    return "";
+  };
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -78,7 +102,7 @@ export const Dashboard = () => {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Usage ($)",
+          text: `${activeTab} ${getUnit(activeTab)}`,
           color: "white",
         },
         grid: {
@@ -108,7 +132,7 @@ export const Dashboard = () => {
           label: function (context) {
             const label = context.dataset.label || "";
             const value = context.parsed.y || 0;
-            return `${label}: $${value}`;
+            return `${label}: ${getUnit(activeTab)}${value}`;
           },
         },
       },
@@ -119,7 +143,18 @@ export const Dashboard = () => {
       <div className="max-w-[1200px] mx-auto">
         <nav className="mb-8">
           <ul className="flex gap-4 bg-[hsl(226,42%,15%)] p-2 rounded-lg">
-            {["Water", "Electricity", "Gas"].map((tab) => (
+            {[
+              
+              "Water Bill",
+              "Water Usage",
+              "Electricity Bill",
+              "Electricity Usage",
+              "Waste Produced",
+              "% Waste Recycled",
+              "HVAC Expenses",
+              "Lighting Expenses",
+              "GHG Emissions",
+            ].map((tab) => (
               <li key={tab} className="flex-1">
                 <button
                   onClick={() => setActiveTab(tab)}
@@ -131,8 +166,6 @@ export const Dashboard = () => {
             ))}
           </ul>
         </nav>
-
-
         <div className="bg-[hsl(226,42%,15%)] rounded-xl p-6 h-[600px]">
           {chartData && <Line data={chartData} options={options} />}
         </div>
