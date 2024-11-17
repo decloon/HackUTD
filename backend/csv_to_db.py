@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Step 1: Parse the CSV
-csv_file = "sample_data.csv" 
+csv_file = "temp.csv" 
 data = pd.read_csv(csv_file)
 
 # Step 2: Connect to PostgreSQL

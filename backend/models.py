@@ -58,13 +58,3 @@ def analyze_csv(data):
     for month, prediction in zip(future_months['Month'], future_predictions):
         month_predictions[month] = prediction
     return month_predictions
-
-def analyze_csv(months):
-    response = client.chat.completions.create(
-        model='Meta-Llama-3.1-8B-Instruct',
-        messages=[{"role":"prediction model","content":"You are Trying to estimate how much a company will lose overtime based on a set of values corresponding to dates, with inputs being dictionaries with dates as the keys and usage as the value, dont tell me how to do it just give me values based on a line of best fit"},{"role":"user","content":months}],
-        temperature =  0.1,
-        top_p = 0.1
-    )
-    ans = response.choices[0].message.content
-    return ans
