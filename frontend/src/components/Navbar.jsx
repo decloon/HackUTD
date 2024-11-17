@@ -17,7 +17,7 @@ const Navbar = () => {
   return (
     <div className="h-[85px] w-full flex flex-row justify-between items-center px-8 border rounded-2xl border-purple-400 p-2" style={{ backgroundColor: "hsl(226, 42%, 20%)" }}>
       <div>
-        <h1 className="text-white text-2xl">Property AI</h1>
+        <h1 className="text-white text-2xl font-bold">Sustainify</h1>
       </div>
       <div>
         <ul className="text-white text-base justify-between gap-9 hidden md:flex">
@@ -28,7 +28,7 @@ const Navbar = () => {
             <a href="#about">About</a>
           </li>
           <li className="text-lg hover:text-purple-500 hover:cursor-pointer ease-in-out duration-500 text-purple-300">
-            <a href="#moredetails">Document</a>
+            <a href="#moredetails">AI Advisor</a>
           </li>
         </ul>
       </div>
@@ -76,7 +76,7 @@ const Navbar = () => {
               className="p-2 text-lg hover:text-purple-500 hover:cursor-pointer ease-in-out duration-500 text-purple-300"
               onClick={closeNav}
             >
-              <a href="#document">Document</a>
+              <a href="#document">AI Advisor</a>
             </li>
             <div className="flex flex-col space-y-3 mt-3">
               <div className="flex justify-center items-center px-3 py-2 bg-purple-600 border rounded-lg hover:bg-purple-700 hover:cursor-pointer">

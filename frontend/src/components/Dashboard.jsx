@@ -104,6 +104,22 @@ export const Dashboard = () => {
     }
   };
 
+  const getReductionPercentage = (metricKey) => {
+    const reductions = {
+      'water_usage': 0.15,      // 15% reduction
+      'water_bill': 0.20,       // 20% reduction
+      'electricity_usage': 0.25, // 25% reduction
+      'electricity_bill': 0.20,  // 20% reduction
+      'waste_produced': 0.10,    // 10% reduction
+      'percent_waste_recycled': 0.15, // 15% reduction
+      'hvac_expenses': 0.20,     // 20% reduction
+      'lighting_expenses': 0.25, // 25% reduction
+      'ghg_emissions': 0.20,     // 20% reduction
+      'total_expense': 0.20      // 20% reduction
+    };
+    return 1 - (reductions[metricKey] || 0.20); // Default to 20% if metric not found
+  };
+
   useEffect(() => {
     if (!metricsData) return;
 
@@ -130,20 +146,19 @@ export const Dashboard = () => {
     ];
 
     if (predictions && predictions[metricKey]) {
-      // Create an array of 12 nulls for each month
       const predictionData = Array(12).fill(null);
+      const lowerBoundData = Array(12).fill(null);
+      const reductionFactor = getReductionPercentage(metricKey);
       
-      // Map the predictions to their respective months
       Object.entries(predictions[metricKey]).forEach(([month, value]) => {
-        // Convert month string to number and make zero-based index
-        console.log(month);
-        const monthIndex = months.findIndex(m => month.toLowerCase().includes(m.toLowerCase()))
+        const monthIndex = months.findIndex(m => month.toLowerCase().includes(m.toLowerCase()));
         if (monthIndex >= 0 && monthIndex < 12) {
           predictionData[monthIndex] = value;
+          lowerBoundData[monthIndex] = value * reductionFactor;
         }
       });
-      console.log(predictionData);
 
+      // Add prediction line
       datasets.push({
         label: `Predicted ${activeTab}`,
         data: predictionData,
@@ -151,6 +166,18 @@ export const Dashboard = () => {
         backgroundColor: 'rgba(255, 165, 0, 0.2)',
         tension: 0.4,
         fill: true,
+      });
+
+      // Add lower bound line
+      const reductionPercent = Math.round((1 - reductionFactor) * 100);
+      datasets.push({
+        label: `${activeTab} Following Sustainify's Optimizations`,
+        data: lowerBoundData,
+        borderColor: 'rgba(62,156,53, 1)',
+        backgroundColor: 'rgba(62,156,53, 0.2)',
+        tension: 0.4,
+        fill: true,
+        borderDash: [5, 5],
       });
     }
 
@@ -199,12 +226,12 @@ export const Dashboard = () => {
         ticks: {
           color: "white",
           autoSkip: true,
-          maxTicksLimit: 8 // Limit number of ticks for better readability
+          maxTicksLimit: 8
         },
         adapters: {
           date: false
         },
-        grace: '5%' // Add some padding to the scale
+        grace: '5%'
       },
       x: {
         grid: {

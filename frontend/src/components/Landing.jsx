@@ -56,8 +56,8 @@ const Landing = () => {
             className="text-white font-bold 
             text-3xl sm:text-4xl md:text-5xl lg:text-7xl bg-opacity-[20%] bg-blue-950 rounded-3xl"
           >
-            Innovating Commercial Real Estate
-            <br /> with Sustainability
+            Innovating Property Management
+            <br /> with Sustainable Solutions
           </h1>
           <p
             className="text-gray-200 
