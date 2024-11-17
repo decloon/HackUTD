@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Step 1: Parse the CSV
-csv_file = "sample_data.csv" 
+csv_file = "market_data.csv" 
 data = pd.read_csv(csv_file)
 
 # Step 2: Connect to PostgreSQL
@@ -28,11 +28,10 @@ print(f"Connected to PostgreSQL database. Version: {db_version}")
 for index, row in data.iterrows():
     cursor.execute(
         """
-        INSERT INTO property_metrics (month, location, size_sqft, total_expense, electricity_bill, electricity_usage, water_bill, water_usage, waste_produced, percent_waste_recycled, hvac_expenses, lighting_expenses, ghg_emissions)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO market_data (location, size_sqft, total_expense, electricity_bill, electricity_usage, water_bill, water_usage, waste_produced, percent_waste_recycled, hvac_expenses, lighting_expenses, ghg_emissions)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """,
         (
-            row['month'],
             row['location'],
             row['size_sqft'],
             row['total_expense'],
@@ -53,4 +52,4 @@ connection.commit()
 cursor.close()
 connection.close()
 
-print("User data inserted successfully!")
+print("Market data inserted successfully!")
