@@ -1,0 +1,9 @@
+# Node.js dependencies
+/TherapyAI/node_modules
+
+# Python virtual environment (if you are using one)
+/flask-nutrition-backend/venv
+
+# Other files to ignore
+__pycache__
+.env

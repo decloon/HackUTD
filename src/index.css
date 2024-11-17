@@ -4,3 +4,12 @@
 
 /* src/index.css */
 @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
+
+/* Ensure video is displayed properly */
+video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+  }
+  
