@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import bG from "../assets/bgv.mp4";
 import assistant from "../assets/assistantImg.png";
 import { ReactTyped } from "react-typed";
-import FadeInWrapper from "../animations/FadeInWrapper";
+import FadeInWrapper from "./FadeInWrapper";
 
 const Landing = () => {
   return (
