@@ -110,7 +110,11 @@ export const Dashboard = () => {
     const monthlyData = metricsData.monthly_data;
     const sentimentScores = metricsData.sentiment_scores;
 
-    const metricKey = activeTab.toLowerCase().replace(/ /g, '_');
+    let metricKey = activeTab.toLowerCase().replace(/ /g, '_');
+    if (activeTab.toLowerCase().includes("recycled")) {
+      metricKey = "percent_waste_recycled";
+    }
+    console.log(metricKey);
     const sentiment = sentimentScores[`${metricKey}_sentiment`];
     const color = getColor(sentiment);
 
@@ -119,8 +123,8 @@ export const Dashboard = () => {
         label: `Your ${activeTab}`,
         data: monthlyData.map((item) => item[metricKey] || 0),
         borderColor: color,
-        backgroundColor: `${color}33`,
-        tension: 0.4,
+        backgroundColor: `${color}`,
+        tension: 0.3,
         fill: true,
       }
     ];
@@ -150,6 +154,7 @@ export const Dashboard = () => {
     if (tab.includes("Usage")) return tab.includes("Electricity") ? "(kWh)" : "(gallons)";
     if (tab.includes("Waste")) return "(tons)";
     if (tab.includes("Emissions")) return "(TCO2e)";
+    if (tab.includes("Recycled")) return "(%)";
     return "";
   };
 
@@ -168,7 +173,7 @@ export const Dashboard = () => {
     },
     scales: {
       y: {
-        beginAtZero: true,
+        // Remove beginAtZero
         title: {
           display: true,
           text: `${activeTab} ${getUnit(activeTab)}`,
@@ -179,7 +184,13 @@ export const Dashboard = () => {
         },
         ticks: {
           color: "white",
+          autoSkip: true,
+          maxTicksLimit: 8 // Limit number of ticks for better readability
         },
+        adapters: {
+          date: false
+        },
+        grace: '5%' // Add some padding to the scale
       },
       x: {
         grid: {
@@ -187,8 +198,9 @@ export const Dashboard = () => {
         },
         ticks: {
           color: "white",
-        },
-      },
+          autoSkip: true
+        }
+      }
     },
     plugins: {
       legend: {
