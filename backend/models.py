@@ -32,10 +32,14 @@ def analyze_csv(data):
     df = pd.DataFrame(list(data.items()), columns=['Month', 'Usage'])
 
     # Convert the 'Month' column to a numerical value (1-12)
-    df['Month'] = pd.Categorical(df['Month']).codes + 1
+    df['Month'] = pd.Categorical(df['Month'], categories=[
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+    ], ordered=True)
+    df['month'] = df['Month'].cat.codes + 1
 
     # Split the data into training and testing sets
-    X = df[['Month']]
+    X = df[['month']]
     y = df['Usage']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -46,15 +50,16 @@ def analyze_csv(data):
     # Make predictions on the testing set
     y_pred = model.predict(X_test)
 
-    # Evaluate the model using mean squared error
+    # Evaluate the model using mean_squared_error
     mse = mean_squared_error(y_test, y_pred)
 
     # Predict future usage for the next 12 months
-    future_months = pd.DataFrame({'Month': range(1, 13)})
+    future_months = pd.DataFrame({'month': range(1, 13)})
     future_predictions = model.predict(future_months)
 
     # Find the predictions for each month
     month_predictions = {}
-    for month, prediction in zip(future_months['Month'], future_predictions):
-        month_predictions[month] = prediction
+    for month, prediction in zip(future_months['month'], future_predictions):
+        month_name = df['Month'].cat.categories[month - 1]
+        month_predictions[month_name] = prediction
     return month_predictions

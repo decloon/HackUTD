@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 import pandas as pd
 from get_insights import process_data
+from models import analyze_csv
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Allow requests from React app) 
@@ -32,6 +33,42 @@ def upload_file():
         result = process_data(filename)
         
         return jsonify(result)
+    else:
+        return jsonify({'error': 'File type not allowed'}), 400
+
+@app.route('/predict', methods=['POST', 'GET'])
+def predict():
+    if 'file' not in request.files:
+        print('No file part')
+        return jsonify({'error': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(filename)
+        
+        # Read the CSV file
+        df = pd.read_csv(filename)
+        
+        # Initialize a dictionary to store predictions
+        predictions = {}
+        
+        # List of metrics to predict
+        metrics = [
+            'total_expense', 'electricity_bill', 'electricity_usage', 'water_bill', 
+            'water_usage', 'waste_produced', 'percent_waste_recycled', 
+            'hvac_expenses', 'lighting_expenses', 'ghg_emissions'
+        ]
+        
+        # Train and predict for each metric
+        for metric in metrics:
+            data = df[['month', metric]].dropna()
+            data_dict = dict(zip(data['month'], data[metric]))
+            predictions[metric] = analyze_csv(data_dict)
+        
+        print(predictions)
+        return jsonify(predictions)
     else:
         return jsonify({'error': 'File type not allowed'}), 400
 

@@ -28,14 +28,9 @@ export const Dashboard = () => {
   const [showUpload, setShowUpload] = useState(true);
   const [sentimentScores, setSentimentScores] = useState({});
   const [metricsData, setMetricsData] = useState(null);
+  const [predictions, setPredictions] = useState(null);
+  const [fileContent, setFileContent] = useState(null); // Replace uploadedFile state with fileContent
 
-Dashboard.propTypes = {
-  metricsData: PropTypes.shape({
-    monthly_data: PropTypes.array,
-    sentiment_scores: PropTypes.object
-  }),
-  setMetricsData: PropTypes.func.isRequired
-};
   const months = [
     "Jan",
     "Feb",
@@ -54,12 +49,15 @@ Dashboard.propTypes = {
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (file && file.type === "text/csv") {
-    //   setSelectedFile(file);
+      // Store file content as blob
+      const blob = new Blob([await file.arrayBuffer()], { type: 'text/csv' });
+      setFileContent(blob);
+      
       const formData = new FormData();
       formData.append("file", file);
 
       try {
-        const response = await fetch("http://127.0.0.1:5173/upload", {  // Updated URL
+        const response = await fetch("http://127.0.0.1:5173/upload", {
           method: 'POST',
           body: formData,
         });
@@ -70,7 +68,7 @@ Dashboard.propTypes = {
 
         const data = await response.json();
         setMetricsData(data);
-        console.log(data);
+        // console.log(data);
         setShowUpload(false);
       } catch (error) {
         console.error("Error uploading file:", error);
@@ -78,6 +76,31 @@ Dashboard.propTypes = {
     } else {
       alert("Please upload a CSV file");
       event.target.value = "";
+    }
+  };
+
+  const handlePredictions = async () => {
+    if (!fileContent) return;
+    
+    // Create a new File object from the stored blob
+    const file = new File([fileContent], 'data.csv', { type: 'text/csv' });
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5173/predict", {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      setPredictions(data);
+    } catch (error) {
+      console.error("Error getting predictions:", error);
     }
   };
 
@@ -91,23 +114,36 @@ Dashboard.propTypes = {
     const sentiment = sentimentScores[`${metricKey}_sentiment`];
     const color = getColor(sentiment);
 
+    const datasets = [
+      {
+        label: `Your ${activeTab}`,
+        data: monthlyData.map((item) => item[metricKey] || 0),
+        borderColor: color,
+        backgroundColor: `${color}33`,
+        tension: 0.4,
+        fill: true,
+      }
+    ];
+
+    if (predictions && predictions[metricKey]) {
+      datasets.push({
+        label: `Predicted ${activeTab}`,
+        data: predictions[metricKey],
+        borderColor: 'rgba(255, 165, 0, 1)',
+        backgroundColor: 'rgba(255, 165, 0, 0.2)',
+        tension: 0.4,
+        fill: true,
+      });
+    }
+
     const chartData = {
       labels: months,
-      datasets: [
-        {
-          label: `Your ${activeTab}`,
-          data: monthlyData.map((item) => item[metricKey] || 0),
-          borderColor: color,
-          backgroundColor: `${color}33`, // Adding transparency
-          tension: 0.4,
-          fill: true,
-        },
-      ],
+      datasets: datasets,
     };
 
     setChartData(chartData);
     setSentimentScores(sentimentScores);
-  }, [activeTab, metricsData]);
+  }, [activeTab, metricsData, predictions]);
 
   const getUnit = (tab) => {
     if (tab.includes("Bill") || tab.includes("Expense")) return "(USD)";
@@ -120,7 +156,7 @@ Dashboard.propTypes = {
   const getColor = (sentiment) => {
     if (sentiment === 1) return "rgb(34, 197, 94)";
     if (sentiment === -1) return "rgb(239, 68, 68)";
-    return "rgb(255, 255, 255)"; // Neutral color
+    return "rgb(255, 255, 255)";
   };
 
   const options = {
@@ -171,15 +207,7 @@ Dashboard.propTypes = {
       },
     },
   };
-
-//   if (!metricsData) {
-//     return (
-//       <div className="min-h-screen w-full bg-[hsl(226,42%,20%)] p-6 flex items-center justify-center">
-//         <p className="text-white">Please upload a CSV file to view the dashboard.</p>
-//       </div>
-//     );
-//   }
-
+  
   return (
     <div className="w-full min-h-screen bg-[hsl(226,42%,20%)] p-6">
       <div className="max-w-[1200px] mx-auto">
@@ -202,33 +230,41 @@ Dashboard.propTypes = {
           </div>
         ) : (
           <>
-            <nav className="mb-8">
-          <ul className="flex gap-4 bg-[hsl(226,42%,15%)] p-2 rounded-lg">
-            {[
-              "Water Bill",
-              "Water Usage",
-              "Electricity Bill",
-              "Electricity Usage",
-              "Waste Produced",
-              "% Waste Recycled",
-              "HVAC Expenses",
-              "Lighting Expenses",
-              "GHG Emissions",
-            ].map((tab) => (
-              <li key={tab} className="flex-1">
-                <button
-                  onClick={() => setActiveTab(tab)}
-                  className={`w-full py-3 px-4 rounded-lg transition-all duration-300 ${activeTab === tab ? "bg-[hsl(226,42%,25%)] text-white shadow-lg" : "text-gray-400 hover:text-white"}`}
-                >
-                  {tab}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="bg-[hsl(226,42%,15%)] rounded-xl p-6 h-[600px]">
-          {chartData && <Line data={chartData} options={options} />}
-        </div>
+            <div className="flex justify-between items-center mb-8">
+              <nav className="flex-1">
+                <ul className="flex gap-4 bg-[hsl(226,42%,15%)] p-2 rounded-lg">
+                  {[
+                    "Water Bill",
+                    "Water Usage",
+                    "Electricity Bill",
+                    "Electricity Usage",
+                    "Waste Produced",
+                    "% Waste Recycled",
+                    "HVAC Expenses",
+                    "Lighting Expenses",
+                    "GHG Emissions",
+                  ].map((tab) => (
+                    <li key={tab} className="flex-1">
+                      <button
+                        onClick={() => setActiveTab(tab)}
+                        className={`w-full py-3 px-4 rounded-lg transition-all duration-300 ${activeTab === tab ? "bg-[hsl(226,42%,25%)] text-white shadow-lg" : "text-gray-400 hover:text-white"}`}
+                      >
+                        {tab}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+              <button
+                onClick={handlePredictions} // Remove the function call, just pass the reference
+                className="ml-4 px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              >
+                Get Predictions
+              </button>
+            </div>
+            <div className="bg-[hsl(226,42%,15%)] rounded-xl p-6 h-[600px]">
+              {chartData && <Line data={chartData} options={options} />}
+            </div>
           </>
         )}
       </div>
@@ -236,53 +272,9 @@ Dashboard.propTypes = {
   );
 };
 
-export default Dashboard;
-//   return (
-//     <div className="min-h-screen w-full bg-[hsl(226,42%,20%)] p-6">
-//       <div className="max-w-[1200px] mx-auto">
-//         {/* {sentimentScores[`${activeTab.toLowerCase().replace(/ /g, '_')}_sentiment`] && (
-//           <div className="mb-4 text-white">
-//             Sentiment: {sentimentScores[`${activeTab.toLowerCase().replace(/ /g, '_')}_sentiment`] === 1 ? 'Positive' : 
-//                        sentimentScores[`${activeTab.toLowerCase().replace(/ /g, '_')}_sentiment`] === -1 ? 'Negative' : 'Neutral'}
-//           </div>
-//         )} */}
-//         <nav className="mb-8">
-//           <ul className="flex gap-4 bg-[hsl(226,42%,15%)] p-2 rounded-lg">
-//             {[
-//               "Water Bill",
-//               "Water Usage",
-//               "Electricity Bill",
-//               "Electricity Usage",
-//               "Waste Produced",
-//               "% Waste Recycled",
-//               "HVAC Expenses",
-//               "Lighting Expenses",
-//               "GHG Emissions",
-//             ].map((tab) => (
-//               <li key={tab} className="flex-1">
-//                 <button
-//                   onClick={() => setActiveTab(tab)}
-//                   className={`w-full py-3 px-4 rounded-lg transition-all duration-300 ${activeTab === tab ? "bg-[hsl(226,42%,25%)] text-white shadow-lg" : "text-gray-400 hover:text-white"}`}
-//                 >
-//                   {tab}
-//                 </button>
-//               </li>
-//             ))}
-//           </ul>
-//         </nav>
-//         <div className="bg-[hsl(226,42%,15%)] rounded-xl p-6 h-[600px]">
-//           {chartData && <Line data={chartData} options={options} />}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-// Dashboard.propTypes = {
-//   metricsData: PropTypes.shape({
-//     monthly_data: PropTypes.array,
-//     sentiment_scores: PropTypes.object
-//   }),
-//   setMetricsData: PropTypes.func.isRequired
-// };
+// If you really need PropTypes, define them here outside the component
+Dashboard.propTypes = {
+  // Only include props that are actually passed to the component
+};
 
-// export default Dashboard;
+export default Dashboard;
