@@ -57,7 +57,7 @@ export const Dashboard = () => {
       formData.append("file", file);
 
       try {
-        const response = await fetch("http://127.0.0.1:5173/upload", {
+        const response = await fetch("http://127.0.0.1:5173/upload", {  // Updated port
           method: 'POST',
           body: formData,
         });
@@ -88,7 +88,7 @@ export const Dashboard = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://127.0.0.1:5173/predict", {
+      const response = await fetch("http://127.0.0.1:5173/predict", {  // Updated port
         method: 'POST',
         body: formData,
       });
@@ -114,7 +114,7 @@ export const Dashboard = () => {
     if (activeTab.toLowerCase().includes("recycled")) {
       metricKey = "percent_waste_recycled";
     }
-    console.log(metricKey);
+
     const sentiment = sentimentScores[`${metricKey}_sentiment`];
     const color = getColor(sentiment);
 
@@ -130,9 +130,23 @@ export const Dashboard = () => {
     ];
 
     if (predictions && predictions[metricKey]) {
+      // Create an array of 12 nulls for each month
+      const predictionData = Array(12).fill(null);
+      
+      // Map the predictions to their respective months
+      Object.entries(predictions[metricKey]).forEach(([month, value]) => {
+        // Convert month string to number and make zero-based index
+        console.log(month);
+        const monthIndex = months.findIndex(m => month.toLowerCase().includes(m.toLowerCase()))
+        if (monthIndex >= 0 && monthIndex < 12) {
+          predictionData[monthIndex] = value;
+        }
+      });
+      console.log(predictionData);
+
       datasets.push({
         label: `Predicted ${activeTab}`,
-        data: predictions[metricKey],
+        data: predictionData,
         borderColor: 'rgba(255, 165, 0, 1)',
         backgroundColor: 'rgba(255, 165, 0, 0.2)',
         tension: 0.4,
