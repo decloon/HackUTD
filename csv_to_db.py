@@ -1,7 +1,7 @@
 import pandas as pd
 import psycopg2
 import os
-from dotenv import load_dotenv  # Ensure you have installed python-dotenv package
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -28,11 +28,12 @@ print(f"Connected to PostgreSQL database. Version: {db_version}")
 for index, row in data.iterrows():
     cursor.execute(
         """
-        INSERT INTO property_metrics (month, size_sqft, total_expense, electricity_bill, electricity_usage, water_bill, water_usage, waste_produced, percent_waste_recycled, hvac_expenses, lighting_expenses, ghg_emissions)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO property_metrics (month, location, size_sqft, total_expense, electricity_bill, electricity_usage, water_bill, water_usage, waste_produced, percent_waste_recycled, hvac_expenses, lighting_expenses, ghg_emissions)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """,
         (
             row['month'],
+            row['location'],
             row['size_sqft'],
             row['total_expense'],
             row['electricity_bill'],
@@ -52,4 +53,4 @@ connection.commit()
 cursor.close()
 connection.close()
 
-print("Data inserted successfully!")
+print("User data inserted successfully!")

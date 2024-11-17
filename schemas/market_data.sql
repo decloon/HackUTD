@@ -1,7 +1,6 @@
-
-CREATE TABLE property_metrics (
+CREATE TABLE market_data (
     id SERIAL PRIMARY KEY,
-    month VARCHAR(50),
+    location VARCHAR(255),
     size_sqft INTEGER,
     total_expense NUMERIC,
     electricity_bill NUMERIC,

@@ -1,0 +1,2 @@
+total_expense_sentiment,electricity_bill_sentiment,electricity_usage_sentiment,water_bill_sentiment,water_usage_sentiment,waste_produced_sentiment,percent_waste_recycled_sentiment,hvac_expenses_sentiment,lighting_expenses_sentiment,ghg_emissions_sentiment
+-1,0,0,0,1,1,1,0,0,0
