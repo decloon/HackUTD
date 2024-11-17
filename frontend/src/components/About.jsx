@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 import React from "react";
 import { LeafIcon, BuildingIcon, UsersIcon, HeartIcon } from "lucide-react";
-import FadeInRight from "../animations/FadeInRight";
-import FadeInWrapper from "../animations/FadeInWrapper";
+import FadeInRight from "./FadeInRight";
+import FadeInWrapper from "./FadeInWrapper";
 
 const About = () => {
   return (
@@ -106,3 +106,6 @@ const About = () => {
 };
 
 export default About;
+
+
+
