@@ -2,31 +2,25 @@ import { Send, Upload, Loader } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
 export const MoreDetails = () => {
-  // State variables to manage messages, input message, loading state, and selected file
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
 
-  // Function to scroll to the bottom of the messages container
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
     });
   };
 
-  // useEffect to scroll to the bottom whenever messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Function to handle sending a message
   const handleSendMessage = async () => {
-    // Return if there is no input message and no selected file
     if (!inputMessage.trim() && !selectedFile) return;
 
-    // Create a new message object
     const newMessage = {
       id: Date.now(),
       text: inputMessage,
@@ -34,14 +28,30 @@ export const MoreDetails = () => {
       file: selectedFile,
     };
 
-    // Add the new message to the messages state
+    const readFile = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+    };
+
+    if (selectedFile) {
+      try {
+        const fileContent = await readFile(selectedFile);
+        newMessage.fileContent = fileContent;
+      } catch (error) {
+        console.error("Error reading file:", error);
+      }
+    }
+
     setMessages((prev) => [...prev, newMessage]);
     setInputMessage("");
     setSelectedFile(null);
     setIsLoading(true);
 
     try {
-      // Send the new message to the backend
       const response = await fetch("/api", {
         method: "POST",
         headers: {
@@ -50,12 +60,10 @@ export const MoreDetails = () => {
         body: JSON.stringify(newMessage),
       });
 
-      // Throw an error if the response is not ok
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
-      // Parse the AI response from the backend
       const aiResponse = await response.json();
       const botMessage = {
         id: Date.now() + 1,
@@ -64,7 +72,6 @@ export const MoreDetails = () => {
         file: null,
       };
 
-      // Add the AI response to the messages state
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -73,7 +80,6 @@ export const MoreDetails = () => {
     }
   };
 
-  // Function to handle file upload
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "text/csv") {
