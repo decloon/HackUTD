@@ -1,11 +1,13 @@
 import { Send, Upload, Loader } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import Dashboard from "./Dashboard";
 
 export const MoreDetails = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [metricsData, setMetricsData] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -17,6 +19,12 @@ export const MoreDetails = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (metricsData) {
+      console.log(metricsData);
+    }
+  }, [metricsData]);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() && !selectedFile) return;
@@ -53,7 +61,7 @@ export const MoreDetails = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api", {
+      const response = await fetch("http://127.0.0.1:5173/api", {  // Updated URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,10 +89,28 @@ export const MoreDetails = () => {
     }
   };
 
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (file && file.type === "text/csv") {
       setSelectedFile(file);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("http://127.0.0.1:5173/upload", {  // Updated URL
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        setMetricsData(data);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
     } else {
       alert("Please upload a CSV file");
       event.target.value = "";
@@ -156,7 +182,14 @@ export const MoreDetails = () => {
             </div>
           )}
         </div>
+        {metricsData && (
+          <div className="mt-4">
+            <h3 className="text-white">Metrics Data:</h3>
+            <pre className="text-white">{JSON.stringify(metricsData, null, 2)}</pre>
+          </div>
+        )}
       </div>
+      {metricsData && <Dashboard metricsData={metricsData} />}
     </div>
   );
 };
