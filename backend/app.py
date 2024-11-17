@@ -37,17 +37,22 @@ def upload_file():
 
 @app.route('/api', methods=['POST'])
 def handle_post():
+    #turn data into python variables
     data = request.json
     print(data)
     message = data['text']
+    csv_data = data['fileContent']
+    if csv_data != None:
+        with open('temp.csv', 'w') as temp:
+            temp.write(csv_data)
     print(message)
     ans = response(message)
         # Process the message here
     info = {
             'text': ans
         }
-    print(info)
     return jsonify(info)
+      
 
 CORS(app)
 if __name__ == '__main__':

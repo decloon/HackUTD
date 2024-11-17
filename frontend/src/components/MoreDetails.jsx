@@ -26,6 +26,7 @@ export const MoreDetails = () => {
       text: inputMessage,
       sender: "user",
       file: selectedFile,
+      fileContent: null,
     };
 
     const readFile = (file) => {
