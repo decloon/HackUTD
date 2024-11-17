@@ -1,10 +1,10 @@
 month,location,size_sqft,total_expense,electricity_bill,electricity_usage,water_bill,water_usage,waste_produced,percent_waste_recycled,hvac_expenses,lighting_expenses,ghg_emissions
-January,"Dallas,TX",5000,3000,250,420,125,500,85,6,170,85,.9
-February,"Dallas,TX",5000,3000,250,420,125,500,85,6,170,85,.9
-March,"Dallas,TX",5000,3000,250,420,125,500,85,6,170,85,.9
-April,"Dallas,TX",5000,3000,250,420,125,500,85,6,170,85,.9
-May,"Dallas,TX",5000,3000,250,420,125,500,85,6,170,85,.9
-June,"Dallas,TX",5000,3000,250,420,125,500,85,6,170,85,.9
+January,"Dallas,TX",5000,1000,250,420,125,500,85,6,170,85,.9
+February,"Dallas,TX",5000,1000,250,420,125,500,85,6,170,85,.9
+March,"Dallas,TX",5000,1000,250,420,125,500,85,6,170,85,.9
+April,"Dallas,TX",5000,1000,250,420,125,500,85,6,170,85,.9
+May,"Dallas,TX",5000,1000,250,420,125,500,85,6,170,85,.9
+June,"Dallas,TX",5000,1000,250,420,125,500,85,6,170,85,.9
 July,"Dallas,TX",5000,1000,250,420,125,500,85,6,170,85,.9
 August,"Dallas,TX",5000,1000,250,420,125,500,85,6,170,85,.9
 September,"Dallas,TX",5000,1000,250,420,125,1000,85,6,170,85,.9
