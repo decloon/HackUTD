@@ -42,18 +42,20 @@ const Navbar = () => {
         </div>
         <div
           onClick={handleNav}
-          className="block md:hidden mr-2 cursor-pointer"
+          className="block md:hidden mr-2 cursor-pointer relative z-50"
         >
           {nav ? (
-            <AiOutlineClose size={20} color="white" className="z-20" />
+            <AiOutlineClose size={20} color="white" />
           ) : (
-            <AiOutlineMenu size={20} color="white" className="z-20" />
+            <AiOutlineMenu size={20} color="white"  />
           )}
         </div>
+
+        {/*Hamburger Nav*/}
         <div
           className={
             nav
-              ? "fixed top-10 right-0 h-full w-[170px] md:w-[240px] flex flex-col bg-gray-800 text-center ease-in-out duration-500 z-10"
+              ? "fixed top-8 right-0 h-full w-[40vw] md:w-[240px] flex flex-col bg-blue-950 text-center ease-in-out duration-500 z-30"
               : "hidden"
           }
         >
@@ -77,10 +79,10 @@ const Navbar = () => {
               <a href="#document">Document</a>
             </li>
             <div className="flex flex-col space-y-3 mt-3">
-              <div className="flex px-3 py-2 bg-purple-600 border rounded-lg hover:bg-purple-700 hover:cursor-pointer">
+              <div className="flex justify-center items-center px-3 py-2 bg-purple-600 border rounded-lg hover:bg-purple-700 hover:cursor-pointer">
                 <h1 className="text-white text-base">Chat Now</h1>
               </div>
-              <div className="flex px-3 py-2 rounded-lg border border-purple-400 hover:cursor-pointer text-purple-400 hover:text-white hover:bg-gray-900 ease-in-out duration-500">
+              <div className="flex justify-center items-center px-3 py-2 rounded-lg border border-purple-400 hover:cursor-pointer text-purple-400 hover:text-white hover:bg-gray-900 ease-in-out duration-500">
                 <h1 className="text-base">Contact Us</h1>
               </div>
             </div>
